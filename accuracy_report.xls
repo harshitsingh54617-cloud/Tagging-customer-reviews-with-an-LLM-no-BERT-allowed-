@@ -1,0 +1,5 @@
+method,evaluated on,precision,recall,f1,exact match
+LLM + retrieved examples,Level 1,0.358,0.358,0.358,0.05
+LLM + retrieved examples,Level 1 + Level 2,0.247,0.234,0.24,0.05
+nearest post only (baseline),Level 1,0.358,0.358,0.358,0.05
+nearest post only (baseline),Level 1 + Level 2,0.247,0.234,0.24,0.05

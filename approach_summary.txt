@@ -1,0 +1,27 @@
+
+APPROACH
+- Parsed Training.xlsx into a taxonomy of 17 Level 1 factors and 43 valid Level 1/Level 2 pairs.
+- For every post, retrieved the 3 most similar labelled posts (TF-IDF cosine similarity) and passed them as
+  few-shot examples, together with the complete taxonomy, to a Groq-hosted LLM (temperature 0, JSON output, 10 posts per request).
+- Parsed the JSON and dropped any pair that is not in the taxonomy, so no invented labels reach the output.
+- Posts can have multiple labels; the output has one row per (Post, Level 1, Level 2) mapping, same format as Training.xlsx.
+
+MODELS CONSIDERED
+- BERT-style models: not allowed by the exercise.
+- TF-IDF + Logistic Regression (classical baseline, not an LLM): pair F1 0.412. Trained on only ~200 posts,
+  so it has very little data for the rare factors.
+- openai/gpt-oss-20b (few-shot, k=3) (few-shot): pair F1 0.282
+- Selected: openai/gpt-oss-20b. It is free on Groq, needs no training, and handles rare factors because the taxonomy is in the prompt.
+
+OUTPUT ACCURACY (validation: 40 held-out training posts, examples retrieved only from the other 200)
+- Level 1 only : precision 0.433, recall 0.382, F1 0.406
+- Level 1 + 2  : precision 0.286, recall 0.278, F1 0.282
+- Exact match of the full label set per post: 0.1
+- Process.xlsx has no ground truth, so these validation numbers are the estimate of the expected accuracy.
+  The final run uses all 266 labelled posts as examples, so real accuracy should be similar or slightly better.
+
+LIMITATIONS / NEXT STEPS
+- The validation set is small, so scores are a bit noisy.
+- Gold labels look subjective (same sentence can reasonably get different labels); part of the error is label noise.
+- Possible improvements: tune K, add short definitions per factor, run a self-consistency vote over several samples,
+  or fine-tune a small open model on the labelled data.
